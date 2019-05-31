@@ -1,0 +1,140 @@
+<style>
+    .list{
+        display: flex;
+    }
+    
+    .pic{
+        width: 30%
+    }
+    .pic image{
+        width: 100%;
+    }
+    .tit{
+        width: 70%;
+        font-size: 13px;
+        margin-left: 7px;
+        margin-top: 10px;
+        position: relative;
+    }
+    .hot{
+        width: 100%;
+        margin: 10px 5px;
+        background: #DEDEDE;
+    }
+    .add{
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #F8D373;
+        font-size: 16px;
+        line-height: 20px;
+        text-align: center;
+        font-weight: bold;
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+    .join{
+        display: flex;
+        width: 70px;
+        height: 20px;
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
+    }
+    .reduce{
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border:1px solid #ccc;
+        font-size: 16px;
+        line-height: 16px;
+        text-align: center;
+        font-weight: bold;
+    }
+    .count{
+        width: 20px;
+        height: 20px;
+        font-size: 16px;
+        line-height: 20px;
+        text-align: center;
+    }
+</style>
+
+<template>
+    <view id="a{{food.tag}}">
+        <view class="hot">{{food.categoryName}}</view>
+        <repeat for='{{food.spuList}}'>
+            <view class="list">
+                <view class='pic'>
+                    <image mode='widthFix' src='{{item.littleImageUrl}}'></image>
+                </view>
+                <view class="tit">
+                    <view>{{item.spuName}}</view>
+                    <view class="join">
+                        <view class="reduce" wx:if='{{item.count >=1}}' @tap="add({{item.spuId}},'reduce')">-</view>
+                        <view class="count" wx:if='{{item.count >=1}}'>{{item.count}}</view>
+                        <view class="add" @tap="add({{item.spuId}},'add')">+</view>
+                    </view>
+                    
+                </view>
+            </view>
+        </repeat>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import {connect} from 'wepy-redux'
+import {GET_BAKERY_LIST} from '../store/types'
+@connect(
+    {
+        getData(state){
+            return state.bakery.bakeryData
+        }
+    },
+    {
+        changeCount : GET_BAKERY_LIST
+    }
+    
+)
+export default class Classify extends wepy.component{
+    props = {
+        food : Object
+    }
+    methods = {
+        add(id,type){
+            this.getData.categoryList.forEach((val,ind) => {
+                val.spuList.forEach(ele => {
+                    if(ele.spuId === id){
+                        if(type === 'add'){
+                            if(ele.count){
+                                ele.count++
+                            }else{
+                                ele.count = 1
+                            }
+                            if(val.count){
+                                val.count++
+                            }else{
+                                val.count = 1
+                            }
+                        }else{
+                            ele.count--
+                            val.count--
+                        }
+                        
+                        
+                    }
+                })
+            })
+            console.log(this.getData)
+            this.methods.changeCount(this.getData)
+
+        }
+    }
+}
+</script>
+
+<style>
+
+</style>

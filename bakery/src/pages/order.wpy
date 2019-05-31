@@ -1,0 +1,138 @@
+<style>
+    .order{
+        width: 100%;
+        height: 100%;
+    }
+    .title{
+        width: 100%;
+        height: 100px;
+        background: #333;
+    }
+    .title image{
+        width: 70px;
+        height: 70px;
+        border-radius: 5px;
+        margin-left: 20px;
+        margin-top: 15px;
+    }
+    .show{
+        display: flex;
+        width: 100%;
+        height: calc(100% - 100px);
+    }
+    .left{
+        width: 25%;
+        background: #DEDEDE;
+        margin-right: 5%;
+    }
+    .right{
+        width: 70%;
+        background: #f5f5f5
+    }
+    .choose{
+        width: 100%;
+        height: 35px;
+        line-height: 35px;
+        text-align: center;
+        font-size: 13px;
+        color: #6E6E6E;
+    }
+    .color{
+        color: #F8D373;
+        font-weight:bold;
+    }
+    .cou{
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 17px;
+        height: 17px;
+        background: #F8D373;
+        text-align: center;
+        border-radius: 50%;
+        font-size: 13px;
+    }
+    .box{
+        position: relative;
+    }
+    /* ::-webkit-scrollbar{
+        width: 5px;
+        height: 10px;
+        color: #F8D373;
+        } */
+</style>
+
+<template>
+    <view class="order">
+        <view class="title">
+            <image  src='http://p0.meituan.net/waimaipoi/cef37b10a27cbeb6c9b225faac0eb8c617697.jpg'></image>
+        </view>
+        <view class="show">
+            <view class="left">
+                <repeat for='{{getData.categoryList}}'>
+                    <view class="box" @tap='floor({{item.tag}})'>
+                        <view class="choose {{defaultIndex === index?'color':''}}" @tap='choose({{index}})'>{{item.categoryName}}</view>
+                        <view class="cou" wx:if='{{item.count}}'>{{item.count}}</view>
+                    </view>
+                    
+                </repeat>
+            </view>
+            <view class="right">
+                <scroll-view
+                    scroll-y
+                    style="height:100%"
+                    bindscrolltoupper="upper"
+                    bindscrolltolower="lower"
+                    bindscroll="scroll"
+                    scroll-into-view="{{toView}}"
+                    scroll-top="{{scrollTop}}">
+                    <repeat for='{{getData.categoryList}}'>
+                        <Classify :food.sync='item'/>
+                    </repeat>
+                </scroll-view>
+            </view>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import { connect } from 'wepy-redux'
+import { getBakery } from '../store/actions'
+import Classify from '../components/classify'
+@connect(
+    {
+        getData(state){
+            console.log(state.bakery.bakeryData)
+            return state.bakery.bakeryData
+        }
+    },
+    {
+        getBakery
+    }
+)
+export default class Order extends wepy.page{
+    components = {
+        Classify
+    }
+    data = {
+        defaultIndex : 0,
+        toView : ''
+    }
+    onReady(){
+        console.log(this.defaultIndex)
+        this.methods.getBakery('http://127.0.0.1:8080/mock/data.json')
+    }
+    methods = {
+        choose(ind){
+            this.defaultIndex = ind
+        },
+        floor(id){
+            this.toView = 'a' + id;
+            console.log(this.toView)
+        }
+    }
+}
+</script>
+
+

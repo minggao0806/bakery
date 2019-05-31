@@ -1,0 +1,1 @@
+export const GET_BAKERY_LIST = 'GET_BAKERY_LIST'
